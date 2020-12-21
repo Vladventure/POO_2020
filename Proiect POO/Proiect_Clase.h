@@ -8,8 +8,13 @@
 // PROFESOR: IANCU BOGDAN
 
 #include <iostream>
+#include <sstream>
 #include <string>
+#include <iomanip>
+#include <windows.h>
 using namespace std;
+
+HANDLE culoareText = GetStdHandle(STD_OUTPUT_HANDLE);
 
 class COLOANA
 {
@@ -17,6 +22,9 @@ private:
 	char* nume_col = nullptr;
 	unsigned tip = 0; // 0 = necunoscut, 1 = int, 2 = text, 3 = float
 	int dimensiune = 0;
+	int impl_int = 0;
+	string impl_text;
+	float impl_float = 0;
 	int inregistrari = 0;
 	int* vector_int = nullptr;
 	string* vector_text = nullptr;
@@ -105,27 +113,36 @@ public:
 		return inregistrari;
 	}
 
-	void getValori()
+	/*void getValori()
 	{
 		int i;
+
+		cout << endl;
+
+		SetConsoleTextAttribute(culoareText, 10);
+
+		cout << nume_col << endl;
+
+		SetConsoleTextAttribute(culoareText, 15);
+
 		if(inregistrari>0)
 			for (i = 0; i < inregistrari; ++i)
 			{
 				switch (tip) {
 				case 1:
 					for (i = 0; i < inregistrari; ++i)
-						cout << vector_int[i] << " ";
+						cout << vector_int[i] << endl;
 					break;
 				case 2:
 					for (i = 0; i < inregistrari; ++i)
-						cout << vector_text[i] << " ";
+						cout << vector_text[i] << endl;
 					break;
 				case 3:
 					for (i = 0; i < inregistrari; ++i)
-						cout << vector_float[i] << " ";
+						cout << vector_float[i] << endl;
 				}
 			}
-	}
+	}*/
 
 	COLOANA& operator=(const COLOANA& col)
 	{
@@ -162,6 +179,15 @@ public:
 		return *this;
 	}
 
+	~COLOANA()
+	{
+		delete[] nume_col;
+		delete[] vector_int;
+		delete[] vector_text;
+		delete[] vector_float;
+	}
+
+	friend class PARSING;
 	friend class TABELA;
 };
 
@@ -187,7 +213,7 @@ public:
 		int i;
 
 		this->exista = true;
-		this->nume = new char[strlen(nume)+1];
+		this->nume = new char[strlen(nume) + 1];
 		strcpy_s(this->nume, strlen(nume) + 1, nume);
 		this->nr_col = nr_col;
 		this->coloane = new COLOANA[nr_col];
@@ -220,24 +246,84 @@ public:
 
 	void displayTabela()
 	{
-		int i;
+		int i, j;
 
 		if (nr_col != 0)
 		{
 			cout << endl;
-			cout << "Numele tabelei: " << nume << endl;
-			cout << "Numarul de coloane: " << nr_col << endl;
-			cout << "Numele coloanelor: ";
+
+			SetConsoleTextAttribute(culoareText, 10);
+
 			for (i = 0; i < nr_col; ++i)
-				cout << coloane[i].nume_col << " ";
+				cout << setw(15) << left << coloane[i].nume_col << " ";
+
+			SetConsoleTextAttribute(culoareText, 15);
+
 			cout << endl;
+
+			for (i = 0; i < coloane[0].inregistrari; ++i)
+			{
+				for (j = 0; j < nr_col; ++j)
+					switch (coloane[j].tip) {
+					case 1:
+						cout << setw(15) << left << coloane[j].vector_int[i] << " ";
+						break;
+					case 2:
+
+						cout << setw(15) << left << coloane[j].vector_text[i] << " ";
+						break;
+					case 3:
+
+						cout << setw(15) << left << coloane[j].vector_float[i] << " ";
+					}
+				cout << endl;
+			}
 		}
+
 		else
 		{
 			cout << endl;
-			cout << "Numele tabelei: " << nume << endl;
+			SetConsoleTextAttribute(culoareText, 12);
+
 			cout << "Tabela este goala!" << endl;
+
+			SetConsoleTextAttribute(culoareText, 15);
 		}
+	}
+
+	void selectColoane(int* ordine, int nr_col_sel)
+	{
+		int i, j;
+
+		cout << endl;
+
+		SetConsoleTextAttribute(culoareText, 10);
+
+		for (i = 0; i < nr_col_sel; ++i)
+			cout << setw(15) << left << coloane[ordine[i]].nume_col << " ";
+
+		SetConsoleTextAttribute(culoareText, 15);
+
+		cout << endl;
+
+		for (i = 0; i < coloane[0].inregistrari; ++i)
+		{
+			for (j = 0; j < nr_col_sel; ++j)
+				switch (coloane[ordine[j]].tip) {
+				case 1:
+					cout << setw(15) << left << coloane[ordine[j]].vector_int[i] << " ";
+					break;
+				case 2:
+
+					cout << setw(15) << left << coloane[ordine[j]].vector_text[i] << " ";
+					break;
+				case 3:
+
+					cout << setw(15) << left << coloane[ordine[j]].vector_float[i] << " ";
+				}
+			cout << endl;
+		}
+
 	}
 
 	TABELA& operator=(const TABELA& tab)
@@ -255,6 +341,12 @@ public:
 			this->coloane[i] = tab.coloane[i];
 
 		return *this;
+	}
+
+	~TABELA()
+	{
+		delete[] nume;
+		delete[] coloane;
 	}
 
 	friend class PARSING;
@@ -288,8 +380,26 @@ public:
 	{
 		int i;
 		if (nr_tab != 0)
-			for (i = 0; i < nr_tab; ++i)
-				cout << tabele[i].getNume() << " ";
+		{
+			cout << "Exista " << nr_tab << " tabele, avand numele: ";
+
+			SetConsoleTextAttribute(culoareText, 14);
+
+			for (i = 0; i < nr_tab - 1; ++i)
+				cout << tabele[i].getNume() << ", ";
+			cout << tabele[nr_tab - 1].getNume() << " ";
+			cout << endl;
+
+			SetConsoleTextAttribute(culoareText, 15);
+		}
+		else
+		{
+			SetConsoleTextAttribute(culoareText, 12);
+
+			cout << "Nu exista tabele!" << endl;
+
+			SetConsoleTextAttribute(culoareText, 15);
+		}
 	}
 
 	void createTabela(const char* nume, int nr_col, COLOANA* coloane)
@@ -317,6 +427,37 @@ public:
 		delete[] tabele_noi;
 	}
 
+	void dropTabela(const char* nume)
+	{
+		int i, j;
+
+		TABELA* tabele_noi = nullptr;
+		int nr_tabele_vechi = nr_tab;
+
+		tabele_noi = new TABELA[nr_tabele_vechi - 1];
+
+		i = j = 0;
+		while (i < nr_tabele_vechi)
+		{
+			if (strcmp(tabele[i].nume, nume) != 0)
+			{
+				tabele_noi[j] = tabele[i];
+				++j;
+			}
+			++i;
+		}
+
+		if (tabele != nullptr)
+			delete[] tabele;
+		tabele = new TABELA[nr_tabele_vechi - 1];
+		for (i = 0; i < nr_tabele_vechi - 1; ++i)
+			tabele[i] = tabele_noi[i];
+
+		nr_tab = nr_tab - 1;
+
+		delete[] tabele_noi;
+	}
+
 	friend class PARSING;
 };
 
@@ -328,7 +469,6 @@ private:
 	char* next_char = nullptr;
 	int val_int = -1;
 	float val_float = -1;
-	COLOANA* coloane = nullptr;
 
 public:
 	PARSING()
@@ -358,28 +498,146 @@ public:
 			return comanda;
 	}
 
-	void functieParsare(BAZA &baza)
+	void functieParsare(BAZA& baza)
 	{
-		int i;
+		int i, j;
+
+		char* copieComanda = nullptr;
+		char* nume_tabela = nullptr;
+		char* nume_col = nullptr;
+
+		copieComanda = new char[strlen(comanda) + 1];
+		strcpy_s(copieComanda, strlen(comanda) + 1, comanda);
 
 		val_char = strtok_s(comanda, " ", &next_char);
 
 		if (strcmp(val_char, "CREATE") == 0)
 		{
-			//val_char = strtok_s(NULL, " ", &next_char);
+			COLOANA* coloane = nullptr;
+			char* tip = nullptr;
+			char* dimensiune = nullptr;
+			int nr_col_ad = 0, nr_crt = 0;
 
-			string v1[] = { "Ana","are","mere", "multe" };
-			int v2[] = { 1,2,3,4 };
+			val_char = strtok_s(NULL, " ", &next_char);
 
-			COLOANA col1("Coloana_1", 2, 40, 4, v1);
-			COLOANA col2("Coloana_2", 1, 20, 4, v2);
-			COLOANA col3("Coloana_3", 1, 60, 4, v2);
+			nume_tabela = strtok_s(NULL, " ", &next_char);
 
-			COLOANA vectorcol1[] = { col1, col2 };
-			COLOANA vectorcol2[] = { col1, col3 };
+			while (val_char != NULL)
+			{
+				val_char = strtok_s(NULL, " (),", &next_char);
+				if (val_char != NULL)
+				{
+					val_char = strtok_s(NULL, " (),", &next_char);
+					val_char = strtok_s(NULL, " (),", &next_char);
+					val_char = strtok_s(NULL, " (),", &next_char);
+					++nr_col_ad;
+				}
+			}
 
-			baza.createTabela("Tabela_1", 2, vectorcol1);
-			baza.createTabela("Tabela_2", 2, vectorcol2);
+			coloane = new COLOANA[nr_col_ad];
+
+			comanda = new char[strlen(copieComanda) + 1];
+			strcpy_s(comanda, strlen(copieComanda) + 1, copieComanda);
+
+			val_char = strtok_s(comanda, " ", &next_char);
+			val_char = strtok_s(NULL, " (),", &next_char);
+			val_char = strtok_s(NULL, " (),", &next_char);
+
+			while (val_char != NULL && nr_crt < nr_col_ad)
+			{
+				if (val_char != NULL)
+					nume_col = strtok_s(NULL, " (),", &next_char);
+				if (val_char != NULL)
+				{
+					coloane[nr_crt].nume_col = new char[strlen(nume_col) + 1];
+					strcpy_s(coloane[nr_crt].nume_col, strlen(nume_col) + 1, nume_col);
+
+					tip = strtok_s(NULL, " (),", &next_char);
+					if (strcmp(tip, "integer") == 0)
+					{
+						coloane[nr_crt].tip = 1;
+						coloane[nr_crt].vector_int = new int[0];
+					}
+
+					else if (strcmp(tip, "text") == 0)
+					{
+						coloane[nr_crt].tip = 2;
+						coloane[nr_crt].vector_text = new string[0];
+					}
+					else if (strcmp(tip, "float") == 0)
+					{
+						coloane[nr_crt].tip = 3;
+						coloane[nr_crt].vector_float = new float[0];
+					}
+
+					dimensiune = strtok_s(NULL, " (),", &next_char);
+					stringstream conversie(dimensiune);
+					conversie >> val_int;
+					coloane[nr_crt].dimensiune = val_int;
+
+					val_char = strtok_s(NULL, " (),", &next_char);
+				}
+				++nr_crt;
+			}
+
+			cout << endl << "A fost ";
+
+			SetConsoleTextAttribute(culoareText, 10);
+
+			cout << "creata";
+
+			SetConsoleTextAttribute(culoareText, 15);
+
+			cout << " tabela ";
+
+			SetConsoleTextAttribute(culoareText, 14);
+
+			cout << nume_tabela;
+
+			SetConsoleTextAttribute(culoareText, 15);
+
+			cout << " avand ";
+
+			if (nr_col_ad == 1)
+				cout << "o coloana." << endl;
+			else
+				cout << nr_col_ad << " coloane." << endl;
+
+			baza.createTabela(nume_tabela, nr_col_ad, coloane);
+
+			delete[] coloane;
+		}
+
+		else if (strcmp(val_char, "DROP") == 0)
+		{
+			val_char = strtok_s(NULL, " ", &next_char);
+
+			if (val_char != NULL)
+				if (strcmp(val_char, "TABLE") == 0)
+				{
+					val_char = strtok_s(NULL, " ", &next_char);
+
+					if (val_char != NULL)
+						baza.dropTabela(val_char);
+				}
+
+			cout << endl << "A fost ";
+
+			SetConsoleTextAttribute(culoareText, 12);
+
+			cout << "stearsa";
+
+			SetConsoleTextAttribute(culoareText, 15);
+
+			cout << " tabela ";
+
+			SetConsoleTextAttribute(culoareText, 14);
+
+			cout << val_char;
+
+			SetConsoleTextAttribute(culoareText, 15);
+
+			cout << "." << endl;
 		}
 
 		else if (strcmp(val_char, "DISPLAY") == 0)
@@ -391,31 +649,82 @@ public:
 				{
 					val_char = strtok_s(NULL, " ", &next_char);
 
-					string v1[] = { "Ana","are","mere", "multe" };
-					int v2[] = { 1,2,3,4 };
-
-					COLOANA col1("Coloana_1", 2, 40, 4, v1);
-					COLOANA col2("Coloana_2", 1, 20, 4, v2);
-					COLOANA col3("Coloana_3", 1, 60, 4, v2);
-
-					COLOANA vectorcol1[] = { col1, col2 };
-					COLOANA vectorcol2[] = { col1, col3 };
-					COLOANA vectorcol3[] = { col1, col2, col3 };
-
-					baza.createTabela("Tabela_1", 2, vectorcol1);
-					baza.createTabela("Tabela_2", 2, vectorcol2);
-					baza.createTabela("Tabela_3", 3, vectorcol3);
-					baza.createTabela("Tabela_4", 0, nullptr);
-
 					if (val_char != NULL)
 						for (i = 0; i < baza.nr_tab; ++i)
 							if (strcmp(baza.tabele[i].nume, val_char) == 0)
 								baza.tabele[i].displayTabela();
 				}
-
 		}
-	}
 
+		else if (strcmp(val_char, "SELECT") == 0)
+		{
+			int nr_col_sel = 0, nr_crt = 0;
+			int* ordine_col = nullptr;
+
+			nume_col = strtok_s(NULL, " ,", &next_char);
+
+			if (strcmp(nume_col, "ALL") == 0)
+			{
+				nume_tabela = strtok_s(NULL, " ,", &next_char);
+				nume_tabela = strtok_s(NULL, " ,", &next_char);
+
+				for (i = 0; i < baza.nr_tab; ++i)
+					if (strcmp(baza.tabele[i].nume, nume_tabela) == 0)
+						baza.tabele[i].displayTabela();
+			}
+
+			else
+			{
+				comanda = new char[strlen(copieComanda) + 1];
+				strcpy_s(comanda, strlen(copieComanda) + 1, copieComanda);
+
+				nume_col = strtok_s(comanda, " ,", &next_char);
+
+				while (strcmp(nume_col, "FROM") != 0)
+				{
+					nume_col = strtok_s(NULL, " ,", &next_char);
+					if (strcmp(nume_col, "FROM") != 0)
+						++nr_col_sel;
+				}
+
+				nume_tabela = strtok_s(NULL, " ,", &next_char);
+
+				ordine_col = new int[nr_col_sel];
+
+				comanda = new char[strlen(copieComanda) + 1];
+				strcpy_s(comanda, strlen(copieComanda) + 1, copieComanda);
+
+				nume_col = strtok_s(comanda, " ,", &next_char);
+
+				while (strcmp(nume_col, "FROM") != 0 && nr_crt <nr_col_sel)
+				{
+					nume_col = strtok_s(NULL, " ,", &next_char);
+					if (strcmp(nume_col, "FROM") != 0)
+						for (i = 0; i < baza.nr_tab; ++i)
+							if (strcmp(baza.tabele[i].nume, nume_tabela) == 0)
+							{
+								for (j = 0; j < baza.tabele[i].nr_col; ++j)
+									if (strcmp(baza.tabele[i].coloane[j].nume_col, nume_col) == 0)
+									{
+										ordine_col[nr_crt] = j;
+										++nr_crt;
+										break;
+									}
+								break;
+							}
+				}
+
+				for (i = 0; i < baza.nr_tab; ++i)
+					if (strcmp(baza.tabele[i].nume, nume_tabela) == 0)
+						baza.tabele[i].selectColoane(ordine_col, nr_col_sel);
+			}
+		}
+
+		delete[] copieComanda;
+	}
+	~PARSING()
+	{
+	}
 };
 
 class EXCEPTIONS

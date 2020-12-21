@@ -17,17 +17,27 @@ int main()
 	// FIRST TESTS
 
 	char cmd_raw[255];
+	strcpy_s(cmd_raw, 1, "");
 	PARSING cmd_parse;
 	BAZA baza;
 
-	cin.getline(cmd_raw, 254);
+	while (strcmp(cmd_raw, "STOP") != 0)
+	{
+		cin.getline(cmd_raw, 254);
 
-	cmd_parse.setComanda(cmd_raw);
+		if (strcmp(cmd_raw, "STOP") != 0)
+		{
+			cmd_parse.setComanda(cmd_raw);
 
-	cmd_parse.functieParsare(baza);
+			cmd_parse.functieParsare(baza);
 
-	/*cout << endl << "Exista " << baza.getNrTab() << " tabele, avand numele: " ;
-	baza.getNumeTabele();*/
+			cout << endl;
+		}
+	}
+
+	cout << endl;
+
+	baza.getNumeTabele();
 
 	//________________________________________________
 	// SECOND TESTS
@@ -53,3 +63,14 @@ int main()
 
 
 }
+
+//string v1[] = { "Ana","are","mere", "multe" };
+//int v2[] = { 1,2,3,4 };
+//
+//COLOANA col1("Coloana_1", 2, 40, 4, v1);
+//COLOANA col2("Coloana_2", 1, 20, 4, v2);
+//COLOANA col3("Coloana_3", 1, 60, 4, v2);
+//
+//COLOANA vectorcol1[] = { col1, col2 };
+//COLOANA vectorcol2[] = { col1, col3 };
+//COLOANA vectorcol3[] = { col1, col2, col3 };
