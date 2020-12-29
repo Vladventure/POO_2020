@@ -47,30 +47,54 @@ int main()
 
 	COLOANA col1("Coloana_1", 2, 40, 4, v1);
 	COLOANA col2("Coloana_2", 1, 20, 4, v2);
+	COLOANA col3 = col2;
+	COLOANA col4("Coloana_3", 1, 20, 0, v2);
 
-	cout << col1.getNume() << endl << col1.getTip() << endl << col1.getDimensiune() << endl << col1.getInregistrari() << endl;
-	col1.getValori();
+	col1 = col1 + 5;
 
-	col1 = col2;
+	++col1;
 
-	cout << endl << endl;
+	col1++;
 
-	cout << col1.getNume() << endl << col1.getTip() << endl << col1.getDimensiune() << endl << col1.getInregistrari() << endl;
-	col1.getValori();*/
+	cout << col1.getDimensiune() << endl;
+
+	cout << col3;
+
+	col3 = col1;
+
+	cout << endl << !col3 << endl;
+
+	cout << endl;
+	col1[0];
+	cout << endl;
+	col2[3];
+	cout << endl;
+
+	cout << endl << !col4 << endl;
+
+	cout << endl << (col4==col2) << " " << (col1==col3) << endl;*/
+
+	/*try
+	{
+		throw EXCEPTIONS("Something went wrong...\n");
+	}
+	catch (EXCEPTIONS& e)
+	{
+		cout << e.what() << endl;
+	}*/
 
 	//________________________________________________
 	// THIRD TESTS
 
+	/*string v1[] = { "Ana","are","mere", "multe" };
+	int v2[] = { 1,2,3,4 };
 
+	COLOANA col1("Coloana_1", 2, 40, 4, v1);
+	COLOANA col2("Coloana_2", 1, 20, 4, v2);
+	COLOANA col3("Coloana_3", 1, 60, 4, v2);
+
+	COLOANA vectorcol1[] = { col1, col2 };
+	COLOANA vectorcol2[] = { col1, col3 };
+	COLOANA vectorcol3[] = { col1, col2, col3 };*/
 }
 
-//string v1[] = { "Ana","are","mere", "multe" };
-//int v2[] = { 1,2,3,4 };
-//
-//COLOANA col1("Coloana_1", 2, 40, 4, v1);
-//COLOANA col2("Coloana_2", 1, 20, 4, v2);
-//COLOANA col3("Coloana_3", 1, 60, 4, v2);
-//
-//COLOANA vectorcol1[] = { col1, col2 };
-//COLOANA vectorcol2[] = { col1, col3 };
-//COLOANA vectorcol3[] = { col1, col2, col3 };
