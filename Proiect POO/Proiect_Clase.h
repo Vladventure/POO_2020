@@ -8,6 +8,7 @@
 // PROFESOR: IANCU BOGDAN
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <iomanip>
 #include <windows.h>
@@ -718,6 +719,46 @@ public:
 		nr_tab = nr_tab - 1;
 
 		delete[] tabele_noi;
+	}
+
+	void exportTabele()
+	{
+		int i, j, k;
+
+		ofstream f;
+		f.open("test.txt", ios::trunc);
+
+		for (k = 0; k < nr_tab; ++k)
+			if (tabele[k].nr_col != 0 && tabele[k].coloane[0].inregistrari != 0)
+			{
+				for (i = 0; i < tabele[k].nr_col; ++i)
+					f << setw(15) << left << tabele[k].coloane[i].nume_col << " ";
+
+				f << endl;
+
+				for (i = 0; i < tabele[k].coloane[0].inregistrari; ++i)
+				{
+					for (j = 0; j < tabele[k].nr_col; ++j)
+						switch (tabele[k].coloane[j].tip)
+						{
+						case 1:
+							f << setw(15) << left << tabele[k].coloane[j].vector_int[i] << " ";
+							break;
+						case 2:
+
+							f << setw(15) << left << tabele[k].coloane[j].vector_text[i] << " ";
+							break;
+						case 3:
+
+							f << setw(15) << left << tabele[k].coloane[j].vector_float[i] << " ";
+						}
+					f << endl;
+				}
+
+				f << endl;
+			}
+
+		f.close();
 	}
 
 	BAZA& operator=(const BAZA& baza)

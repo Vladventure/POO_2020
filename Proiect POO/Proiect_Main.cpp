@@ -8,6 +8,7 @@
 // PROFESOR: IANCU BOGDAN
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include "Proiect_Clase.h"
 using namespace std;
@@ -35,9 +36,13 @@ int main()
 		}
 	}
 
+
+
 	cout << endl;
 
 	baza.getNumeTabele();
+
+	baza.exportTabele();
 
 	//________________________________________________
 	// SECOND TESTS
